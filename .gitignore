@@ -1,0 +1,15 @@
+# Generated pipeline outputs (regenerable)
+experimental_sem_results/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+
+# Hidden utility scripts (not part of the project)
+.*
+# ...but keep project dotfiles that must be tracked
+!.gitignore
+!.github/

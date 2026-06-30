@@ -1,0 +1,21 @@
+# Auto-generated pinned CORE dependencies (no torch), for pip users not using uv.
+# Source of truth is pyproject.toml + uv.lock; regenerate with:
+#    uv export --no-hashes --no-emit-project > requirements.txt
+#
+# Recommended install is uv (reproducible, manages Python):  uv sync
+# For the optional second-opinion CNN, also install torch:   uv sync --extra cnn
+#    (or with pip:  pip install -r requirements.txt "torch>=2.0")
+numpy==2.2.6 ; python_full_version < '3.11'
+    # via
+    #   nanowire-detection
+    #   opencv-python-headless
+numpy==2.4.6 ; python_full_version == '3.11.*'
+    # via
+    #   nanowire-detection
+    #   opencv-python-headless
+numpy==2.5.0 ; python_full_version >= '3.12'
+    # via
+    #   nanowire-detection
+    #   opencv-python-headless
+opencv-python-headless==4.13.0.92
+    # via nanowire-detection

@@ -1,0 +1,57 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  # Core guarantee: the default install (no torch) works on a clean machine.
+  # uv installs the exact versions pinned in uv.lock, so "CI passes" means
+  # "works on a fresh machine following the documented install".
+  core:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync environment (core + dev, no torch)
+        run: uv sync --extra dev --python ${{ matrix.python-version }}
+
+      - name: Verify the pipeline imports without torch
+        run: |
+          uv run python -c "import importlib.util as u; assert u.find_spec('torch') is None, 'torch should not be installed in the core env'"
+          uv run python -c "import nanowire_ml.fused_nanowire_pipeline, nanowire_ml.coordinate_candidates"
+
+      - name: Run tests
+        run: uv run pytest -ra
+
+  # Optional: prove the [cnn] extra (torch) also installs and tests pass.
+  # Separate job so a slow/flaky torch install never blocks the core guarantee.
+  cnn:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync environment (core + dev + cnn)
+        # torch is pinned to the CPU wheel index in pyproject.toml, so this pulls
+        # the small CPU build (no CUDA) and stays reproducible from uv.lock.
+        run: uv sync --extra dev --extra cnn --python 3.12
+
+      - name: Run tests
+        run: uv run pytest -ra
