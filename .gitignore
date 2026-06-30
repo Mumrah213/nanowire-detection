@@ -1,5 +1,7 @@
 # Generated pipeline outputs (regenerable)
 experimental_sem_results/
+experimental_sem/results/
+results/
 
 # Python caches
 __pycache__/

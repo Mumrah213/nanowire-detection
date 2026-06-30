@@ -83,6 +83,30 @@ installs and works — not just "works on my machine". (The lockfile pins Python
 packages; it does not pin the OS or system libraries — that's Docker territory,
 intentionally out of scope here.)
 
+### Container (Docker / Podman)
+
+A `Dockerfile` is provided for fully isolated, reproducible runs. The image
+includes Python 3.12, uv, and all pinned dependencies.
+
+```bash
+# Build
+podman build -t nanowire_detection .
+
+# Run on a single SEM image
+podman run --rm \
+  -v <input-dir>:/data:Z \
+  nanowire_detection \
+  python nanowire_ml/coordinate_candidates.py /data/<image>.tif \
+    --output-dir /data/results
+```
+
+Replace `<input-dir>` with the directory containing your SEM images and
+`<image>.tif` with the filename. The `:Z` flag is needed on SELinux systems
+(Fedora, RHEL) to allow the container to read/write the mounted directory.
+
+Results (PNG overlays, CSV/JSON tables, per-candidate crops) are written back
+into the mounted directory under `results/`.
+
 Inputs are SEM images under `experimental_sem/`; all outputs land under
 `experimental_sem_results/` (git-ignored).
 
